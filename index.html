@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexaBank — Smart Banking</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">💳</div>
+      <div class="logo-name">Nexa<span>Bank</span></div>
+    </div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-sub">Sign in to your account</div>
+    <div class="input-group">
+      <label>Email or Username</label>
+      <input id="loginUser" type="text" placeholder="Enter email or username" autocomplete="off" />
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="Enter password" />
+    </div>
+    <div class="login-hint">Demo → <span>marco@nexabank.com</span> / <span>1234</span> &nbsp;·&nbsp; <span>jacob@nexabank.com</span> / <span>5678</span></div>
+    <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ===== 2FA ===== -->
+<div id="twoFactorScreen" class="hidden">
+  <div class="twofa-box">
+    <div class="login-logo">
+      <div class="logo-icon">🔐</div>
+      <div class="logo-name">Nexa<span>Bank</span></div>
+    </div>
+    <div class="login-title">Two-Factor Authentication</div>
+    <div class="login-sub">We sent a 6-digit verification code to <span id="twoFactorDestination">your device</span></div>
+    <div class="input-group">
+      <label>Verification Code</label>
+      <input id="twoFactorCode" class="twofa-code" type="text" maxlength="6" placeholder="123456" autocomplete="off" />
+    </div>
+    <div class="login-hint">Demo code: <span id="twoFactorHint">123456</span></div>
+    <div class="twofa-actions">
+      <button class="btn-secondary" onclick="backToLogin()">Back</button>
+      <button class="btn-primary" onclick="verifyTwoFactor()">Verify</button>
+    </div>
+    <div class="login-error" id="twoFactorError"></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">💳</div>
+      <div class="logo-name">Nexa<span>Bank</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="transfer" onclick="showPage('transfer',this)">
+        <span class="nav-icon">💸</span> Transfer
+      </div>
+      <div class="nav-item" data-page="withdraw" onclick="showPage('withdraw',this)">
+        <span class="nav-icon">🏧</span> Withdraw
+      </div>
+      <div class="nav-item" data-page="bills" onclick="showPage('bills',this)">
+        <span class="nav-icon">📄</span> Pay Bills
+      </div>
+      <div class="nav-item loan-tab" data-page="cards" onclick="showPage('cards',this)">
+        <span class="nav-icon">💳</span> My Cards
+      </div>
+      <div class="nav-item loan-tab" data-page="loans" onclick="showPage('loans',this)">
+        <span class="nav-icon">🏛️</span> Loans
+      </div>
+      <div class="nav-item" data-page="history" onclick="showPage('history',this)">
+        <span class="nav-icon">🕒</span> History
+      </div>
+      <div class="nav-item" data-page="notifications" onclick="showPage('notifications',this)">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="notif-badge" id="navNotifBadge">0</span>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-avatar" id="sidebarAvatar">M</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">Marco</div>
+          <div class="user-role">Personal Account</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Logout">⏻</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Good morning, <span id="headerName">Marco</span> 👋</div>
+        <div class="page-sub">Here's your financial overview</div>
+      </div>
+      <div class="acct-grid">
+        <div class="acct-card checking">
+          <div class="acct-type">Checking Account</div>
+          <div class="acct-balance" id="balChecking">$4,250.00</div>
+          <div class="acct-num">•••• •••• •••• 4521</div>
+        </div>
+        <div class="acct-card savings" id="savingsCard">
+          <div class="acct-type">Savings Account</div>
+          <div class="acct-balance" id="balSavings">$12,800.00</div>
+          <div class="acct-num">•••• •••• •••• 8834</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Balance</div>
+          <div class="stat-value" id="statTotal">$17,050.00</div>
+          <div class="stat-change">↑ 3.2% this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Spent This Month</div>
+          <div class="stat-value" id="statSpent">$1,240.00</div>
+          <div class="stat-change" style="color:var(--red)">↑ $240 vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending Bills</div>
+          <div class="stat-value" id="statBills">3</div>
+          <div class="stat-change" style="color:var(--yellow)">Due within 7 days</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Transactions</div>
+        <div class="txn-list" id="recentTxns"></div>
+      </div>
+    </div>
+
+    <!-- TRANSFER PAGE -->
+    <div class="page" id="page-transfer">
+      <div class="page-header">
+        <div class="page-title">Transfer Money 💸</div>
+        <div class="page-sub">Send funds to your accounts or to another NexaBank user</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Transfer Details</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="form-row">
+            <div class="field">
+              <label>Transfer Type</label>
+              <select id="tfType" onchange="toggleTfType()">
+                <option value="own">Between My Accounts</option>
+                <option value="user">To Another NexaBank User</option>
+                <option value="external">To External Bank Account</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>From Account</label>
+              <select id="tfFrom">
+                <option value="checking">Checking — $<span id="tfFromBal">4,250.00</span></option>
+                <option value="savings">Savings</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field" id="tfToOwnWrap">
+              <label>To Account</label>
+              <select id="tfTo">
+                <option value="savings">Savings Account</option>
+                <option value="checking">Checking Account</option>
+              </select>
+            </div>
+            <div class="field hidden" id="tfToUserWrap">
+              <label>Recipient (NexaBank User)</label>
+              <select id="tfToUser"></select>
+            </div>
+            <div class="field hidden" id="tfExternalNameWrap">
+              <label>Recipient Name</label>
+              <input id="tfExternalName" type="text" placeholder="John Doe" />
+            </div>
+            <div class="field">
+              <label>Amount ($)</label>
+              <input id="tfAmount" type="number" min="1" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="form-row hidden" id="tfExternalDetailsRow">
+            <div class="field">
+              <label>Routing Number</label>
+              <input id="tfRouting" type="text" maxlength="9" placeholder="021000021" />
+            </div>
+            <div class="field">
+              <label>Account Number</label>
+              <input id="tfExternalAcct" type="text" maxlength="17" placeholder="987654321" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Note (optional)</label>
+            <input id="tfNote" type="text" placeholder="What's this for?" />
+          </div>
+          <div>
+            <button class="btn-submit" onclick="doTransfer()">⚡ Send Transfer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WITHDRAW PAGE -->
+    <div class="page" id="page-withdraw">
+      <div class="page-header">
+        <div class="page-title">Withdraw Money 🏧</div>
+        <div class="page-sub">Choose an account and withdraw funds with built-in balance checks</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Withdrawal Details</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="form-row">
+            <div class="field">
+              <label>From Account</label>
+              <select id="wdFrom"></select>
+            </div>
+            <div class="field">
+              <label>Amount ($)</label>
+              <input id="wdAmount" type="number" min="1" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Memo (optional)</label>
+            <input id="wdMemo" type="text" placeholder="ATM withdrawal" />
+          </div>
+          <div>
+            <button class="btn-submit" onclick="doWithdraw()">🏧 Withdraw Funds</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BILLS PAGE -->
+    <div class="page" id="page-bills">
+      <div class="page-header">
+        <div class="page-title">Pay Bills 📄</div>
+        <div class="page-sub">Select a bill to pay, or enter custom payment details</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Pending Bills</div>
+        <div class="bills-grid" id="billsGrid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Payment Details</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="form-row">
+            <div class="field">
+              <label>Bill / Payee</label>
+              <input id="billName" type="text" placeholder="e.g. Electric, Netflix…" />
+            </div>
+            <div class="field">
+              <label>Amount ($)</label>
+              <input id="billAmount" type="number" min="1" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Pay From</label>
+              <select id="billFrom">
+                <option value="checking">Checking Account</option>
+                <option value="savings">Savings Account</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <button class="btn-submit" onclick="doPayBill()">✅ Pay Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS PAGE -->
+    <div class="page" id="page-cards">
+      <div class="page-header">
+        <div class="page-title">My Cards 💳</div>
+        <div class="page-sub">Manage your debit and credit cards</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;" id="cardsGrid"></div>
+    </div>
+
+    <!-- LOANS PAGE -->
+    <div class="page" id="page-loans">
+      <div class="page-header">
+        <div class="page-title">My Loans 🏛️</div>
+        <div class="page-sub">View balances, make payments, and track payoff progress</div>
+      </div>
+      <div id="loansGrid" style="display:flex;flex-direction:column;gap:18px;"></div>
+      <div class="card">
+        <div class="card-title">Make a Loan Payment</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="form-row">
+            <div class="field">
+              <label>Select Loan</label>
+              <select id="loanSelect">
+                <option value="cc">Credit Card</option>
+                <option value="auto">Auto Loan</option>
+                <option value="personal">Personal Loan</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Payment Amount ($)</label>
+              <input id="loanPayAmt" type="number" min="1" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Pay From</label>
+              <select id="loanPayFrom">
+                <option value="checking">Checking Account</option>
+                <option value="savings">Savings Account</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button class="btn-submit" onclick="doPayLoan()">💳 Make Payment</button>
+            <button class="btn-submit" style="background:linear-gradient(135deg,#059669,#10b981)" onclick="doPayLoanMin()">⚡ Pay Minimum</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS PAGE -->
+    <div class="page" id="page-notifications">
+      <div class="page-header">
+        <div class="page-title">Notifications 🔔</div>
+        <div class="page-sub">Transfer alerts, login events, security notices, and system status</div>
+      </div>
+      <div class="status-grid">
+        <div class="status-card">
+          <div class="card-title">Security</div>
+          <div class="status-value">2FA On</div>
+          <div class="small muted">Verification required on every sign in</div>
+        </div>
+        <div class="status-card">
+          <div class="card-title">Performance</div>
+          <div class="status-value">Fast UI</div>
+          <div class="small muted">Client-side validation and instant balance refresh</div>
+        </div>
+        <div class="status-card">
+          <div class="card-title">Availability</div>
+          <div class="status-value">24/7 Demo</div>
+          <div class="small muted">Local demo state for consistent uptime</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;">
+          <div class="card-title" style="margin-bottom:0;">Recent Alerts</div>
+          <button class="btn-secondary" style="padding:10px 14px;flex:0;" onclick="markAllNotificationsRead()">Mark all read</button>
+        </div>
+        <div class="notif-list" id="notificationsList"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div class="page" id="page-history">
+      <div class="page-header">
+        <div class="page-title">Transaction History 🕒</div>
+        <div class="page-sub">All your recent activity</div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Transactions</div>
+        <div class="txn-list" id="allTxns"></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- CHAT ASSISTANT PANEL -->
+  <div id="chatPanel">
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-info">
+        <div class="chat-name">Nexi</div>
+        <div class="chat-status">Online</div>
+      </div>
+      <button class="chat-close-btn" onclick="toggleChat()" title="Close">✕</button>
+    </div>
+    <div id="chatMessages"></div>
+    <div class="chat-footer">
+      <input id="chatInput" type="text" placeholder="Ask Nexi anything…" onkeydown="if(event.key==='Enter')sendChat()" />
+      <button id="chatSend" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+
+  <!-- Chat backdrop overlay (mobile) -->
+  <div id="chatOverlay" onclick="toggleChat()"></div>
+
+</div><!-- /app -->
+
+<!-- Floating chat button -->
+<button id="chatFab" onclick="toggleChat()" title="Chat with Nexi">
+  💬
+  <div class="fab-badge"></div>
+</button>
+
+<!-- TOAST -->
+<div id="toast">✅ Done</div>
+<script src="js/app.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/transfers.js"></script>
+<script src="js/loans.js"></script>
+<script src="js/nexi.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>
