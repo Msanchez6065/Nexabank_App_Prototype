@@ -1,4 +1,5 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Msanchez6065/Nexabank_App_Prototype/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Msanchez6065/Nexabank_App_Prototype)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12559/badge)](https://www.bestpractices.dev/projects/12559)
 # 💳 NexaBank App Prototype
 
 ## 📌 Overview
