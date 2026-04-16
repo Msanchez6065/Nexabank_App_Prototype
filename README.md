@@ -12,6 +12,7 @@ NexaBank is a web-based banking application prototype designed to simulate core 
 🧾 Payments: Bill payments and loan payments (manual + minimum payments).  
 🤖 Nexi AI Assistant: Natural language command processing with multi-action execution (e.g., “pay loan and transfer $100”), supporting transfers, loan payments, withdrawals, and bill payments.  
 🔔 Notifications: Real-time transaction alerts, unread notification tracking, and toast messages for user feedback.
+Test change for PR review
 
 ## 🧱 Project Structure
 NexaBank-App/  
